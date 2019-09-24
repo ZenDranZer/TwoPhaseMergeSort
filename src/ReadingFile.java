@@ -1,8 +1,6 @@
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,9 +15,10 @@ public class ReadingFile
 		int m=3;
 		String[] chunk=new String[m];
 		int count=0;
-		String sCurrentLine;
-		//BufferedReader in = new BufferedReader(new FileReader("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Sample.txt"));
-		Scanner sc=new Scanner(new File("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Sample.txt"));
+		//Scanner sc=new Scanner(new File("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\input.txt"));
+		Scanner sc=new Scanner(new File("input.txt"));
+		sc.nextLine();
+		sc.nextLine();
 		try {
 			while (sc.hasNextLine()) 
 	        {
@@ -27,24 +26,25 @@ public class ReadingFile
 	            count++;
 	            if(count%m==0)
 	            {
-	            	obj.sort(chunk);
+	            	obj.sort(chunk,count);
 	            	count=0;
 	            }
 	        }
 	        if(count!=0)
 	        {
-	        	BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Output.txt",true));
+	        	//BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Output.txt",true));
 	        	if(count==2)
 	        	{
-	        		
-	        		out.write(chunk[0]);
-	        		out.write(chunk[1]);
+	        		obj.sort(chunk, count);
+	        		//out.write(chunk[0]);
+	        		//out.write(chunk[1]);
 	        	}
 	        	else
 	        	{
-	        		out.write(chunk[0]);
+	        		obj.sort(chunk, count);
+	        		//out.write(chunk[0]);
 	        	}
-	        	out.close();
+	        	//out.close();
 	        }
 	       
 	    } 
@@ -52,21 +52,28 @@ public class ReadingFile
 	        e.printStackTrace();
 	    }
 	 }
-	public void sort(String[] chunk) throws IOException
+	public void sort(String[] chunk,int len) throws IOException
 	{
-		BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Output.txt",true));
-		for(int i=0;i<chunk.length;i++)
-		{
-
-			
-			if (chunk[i] != null) {
-				out.write(chunk[i]);
+		
+		//BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Output.txt",true));
+		BufferedWriter out = new BufferedWriter(new FileWriter("Output.txt",true));
+			for(int i=0;i<len;i++)
+			{
+				String [] arrr=chunk[i].split(" ");
+				int a[] =new int[arrr.length];
+				for(int j=0;j<arrr.length;j++)
+				{
+					a[j]=Integer.parseInt(arrr[j]);
+				}
+				Arrays.sort(a);
+				for(int k=0;k<a.length;k++)
+				{
+					out.write(a[k]+" ");
+				}
 				out.newLine();
-			}
-		}
-		out.close();
-		}
-	
+				out.flush();  
+				}
+	}
 	}
 	
 
