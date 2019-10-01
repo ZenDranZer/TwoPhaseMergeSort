@@ -1,29 +1,32 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Scanner;
 
-public class ReadingFile 
-{
-	
+public class Test {
+
 	public static void main(String[] args) throws IOException 
 	{
 		long start = System.currentTimeMillis();
-		ReadingFile obj=new ReadingFile();
+		Test obj=new Test();
 		int m=3;
 		String[] chunk=new String[m];
 		int count=0;
-		Scanner sc=new Scanner(new File("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\input2.txt"));
+		//Scanner sc=new Scanner(new File("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\input2.txt"));
 		//Scanner sc=new Scanner(new File("input.txt"));
-		sc.nextLine();
-		sc.nextLine();
+		//sc.nextLine();
+		//sc.nextLine();
+		BufferedReader fileBufferReader = new BufferedReader(new FileReader("C:\\Users\\Shivam\\eclipse-workspace\\GuessGame\\number1.txt"));
+		fileBufferReader.readLine();
+		fileBufferReader.readLine();
 		try {
-			while (sc.hasNextLine()) 
+			String fileLineContent;
+			while ((fileLineContent = fileBufferReader.readLine()) != null)
 	        {
-	            chunk [count] = sc.nextLine();
+	            chunk [count] = fileLineContent;
 	            count++;
 	            if(count%m==0)
 	            {
@@ -31,7 +34,6 @@ public class ReadingFile
 	            	count=0;
 	            }
 	        }
-			
 	        if(count!=0)
 	        {
 	        	//BufferedWriter out = new BufferedWriter(new FileWriter("C:\\Users\\Shivam\\git\\TwoPhaseMergeSort\\src\\Output.txt",true));
@@ -48,14 +50,14 @@ public class ReadingFile
 	        	}
 	        	//out.close();
 	        }
-	       
+	        fileBufferReader.close();
 	    } 
 	    catch (FileNotFoundException e) {
 	        e.printStackTrace();
 	    }
 		long end = System.currentTimeMillis();
 		float sec = (end - start) / 1000F; System.out.println(sec + " seconds");
-		sc.close();
+		
 	 }
 	public void sort(String[] chunk,int len) throws IOException
 	{
@@ -80,8 +82,4 @@ public class ReadingFile
 				}
 			
 	}
-	}
-	
-
-
-
+}
