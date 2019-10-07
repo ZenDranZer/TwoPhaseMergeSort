@@ -10,7 +10,7 @@ public class TwoWayMergeSort {
         try{
             long start = System.currentTimeMillis();
             //Phase 1
-            File inputFile = new File("src/sampleInput.txt");
+            File inputFile = new File("src/inputFiles/input3M.txt");
             Scanner sc = new Scanner(inputFile);
             String[] firstLine = sc.nextLine().split(" ");
 
@@ -150,13 +150,13 @@ public class TwoWayMergeSort {
                 min = 2147483645;
                 outputIndex++;
             }
+            long end = System.currentTimeMillis();
+            float sec = (end - start) / 1000F;
+            System.out.println(sec + " seconds");
             for (Scanner fsc: scanners) {
                 fsc.close();
             }
             outputFile.close();
-            long end = System.currentTimeMillis();
-            float sec = (end - start) / 1000F;
-            System.out.println(sec + " seconds");
         }catch (Exception e){
             e.printStackTrace();
         }
