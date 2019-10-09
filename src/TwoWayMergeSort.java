@@ -8,39 +8,37 @@ public class TwoWayMergeSort {
     public static void main(String[] args) {
 
         try{
-            long start = System.currentTimeMillis();
+            long start = System.nanoTime();
             //Phase 1
-            File inputFile = new File("src/inputFiles/input3M.txt");
+            File inputFile = new File("src/inputFiles/input100k.txt");
             Scanner sc = new Scanner(inputFile);
             String[] firstLine = sc.nextLine().split(" ");
 
             int n = Integer.parseInt(firstLine[0]);
-            int i = 0;
-            int[] array = new int[50000];
+            int mm = Integer.parseInt(firstLine[1]);
+            int bufferCapacity = mm*10000;
+            int outputBufferCapacity = (int)Math.floor(bufferCapacity * 0.2);
+            int inputBufferCapacity = (int)Math.floor(bufferCapacity * 0.8);
 
+            int i = 0;
+            int[] array = new int[bufferCapacity];
 
             int phID = 0;
             String PH = "PH";
 
-
-            Runtime runtime = Runtime.getRuntime();
-            double freeMemory = runtime.freeMemory();
-            double usableMemory = freeMemory * 0.6; //60% usage.
-            //System.out.println(usableMemory/1024);
-
-
             while(sc.hasNextInt()){
-                if(i == 50000){
-                    Arrays.parallelSort(array);
+                if(i == bufferCapacity){
+                    sort(array);
                     BufferedWriter out = new BufferedWriter(new FileWriter("src/tempFiles/"+PH+phID+".txt"));
                     phID++;
                     out.write(toString(array));
                     out.flush();
-                    n-=50000;
-                    if(n>50000){
-                        array = new int[50000];
-                    }else{
+                    n-=bufferCapacity;
+                    if(n>bufferCapacity)
+                        array = new int[bufferCapacity];
+                    else{
                         array = new int[n];
+                        System.out.println(n);
                     }
                     i=0;
                     out.close();
@@ -48,9 +46,8 @@ public class TwoWayMergeSort {
                 array[i] = sc.nextInt();
                 i++;
             }
-
-
-            Arrays.parallelSort(array);
+            System.out.println(i);
+            sort(array);
             BufferedWriter out = new BufferedWriter(new FileWriter("src/tempFiles/"+PH+phID+".txt"));
             out.write(toString(array));
             out.flush();
@@ -64,16 +61,12 @@ public class TwoWayMergeSort {
 
             BufferedWriter outputFile = new BufferedWriter(new FileWriter("src/output.txt",true));
 
-            runtime = Runtime.getRuntime();
-            usableMemory = (runtime.freeMemory() * 0.6) / 1024; //60% usage.
             //System.out.println(usableMemory);
 
 
-            int memoryPerBuffer = (int)Math.floor(usableMemory/(phID+1));
-
-            int[] output = new int[10000];
+            int[] output = new int[outputBufferCapacity];
             int outputIndex = 0;
-            int maxInputSize = 40000/phID;
+            int maxInputSize = inputBufferCapacity/phID;
 
             ArrayList<Integer>[] inputBuffers = new ArrayList[phID];
 
@@ -109,6 +102,7 @@ public class TwoWayMergeSort {
                 }
                 if(boo)
                     break;
+
                 //find min and load if a list is empty
                 for(int k = 0; k < phID;k++){
 
@@ -135,23 +129,28 @@ public class TwoWayMergeSort {
                         min = inputBuffers[k].get(0);
                         index = k;
                     }
-                    //System.out.print(min);
+                    //System.out.print("min : " + min);
                 }
-                //System.out.println();
-                if(outputIndex==10000){
-                    outputFile.write(toString(output));
-                    outputFile.flush();
-                    outputIndex = 0;
-                    output = new int[10000];
-                }
-                if(inputBuffers[index].isEmpty())
+                //System.out.println("Min :" + min + " Output Index : " + outputIndex + " Output Buffer Capacity :" + outputBufferCapacity);
+
+                if(min == 2147483645)
                     break;
-                output[outputIndex] = inputBuffers[index].remove(0);
+
+                if(outputIndex==outputBufferCapacity){
+                    outputFile.append(toString(output));
+                    outputIndex = 0;
+                    output = new int[outputBufferCapacity];
+                }
+
+                output[outputIndex] = min;
+                inputBuffers[index].remove(0);
                 min = 2147483645;
                 outputIndex++;
             }
-            long end = System.currentTimeMillis();
-            float sec = (end - start) / 1000F;
+            outputFile.write(toString(output));
+            outputFile.flush();
+            long end = System.nanoTime();
+            double sec = (end - start) / 1000000000.0;
             System.out.println(sec + " seconds");
             for (Scanner fsc: scanners) {
                 fsc.close();
@@ -159,6 +158,39 @@ public class TwoWayMergeSort {
             outputFile.close();
         }catch (Exception e){
             e.printStackTrace();
+        }
+    }
+
+
+    public static void sort(int arr[]) {
+        int n = arr.length;
+
+        for (int i = n / 2 - 1; i >= 0; i--)
+            heapify(arr, n, i);
+
+        for (int i=n-1; i>=0; i--) {
+            int temp = arr[0];
+            arr[0] = arr[i];
+            arr[i] = temp;
+            heapify(arr, i, 0);
+        }
+    }
+
+    static void heapify(int arr[], int n, int i) {
+        int largest = i;
+        int l = 2*i + 1;
+        int r = 2*i + 2;
+
+        if (l < n && arr[l] > arr[largest])
+            largest = l;
+        if (r < n && arr[r] > arr[largest])
+            largest = r;
+
+        if (largest != i) {
+            int swap = arr[i];
+            arr[i] = arr[largest];
+            arr[largest] = swap;
+            heapify(arr, n, largest);
         }
     }
 
